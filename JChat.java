@@ -101,16 +101,23 @@ public class JChat {
 		btnSubmit.setForeground(Color.MAGENTA);
 		btnSubmit.setBounds(465, 260, 70, 23);
 		frame.getContentPane().add(btnSubmit);
-		
+        
+        /**
+         * Send the chat message
+         */
 		btnSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-
+                
+                // if the user is not populated, then prompt the user
+                // and set the focus on the username textfield
                 if(userName.getText().isEmpty()) {
                     JOptionPane.showMessageDialog(null, "UserName required!");
                     userName.requestFocus();
                     return;
                 }
 
+                // ensure there is a message to send  otherwise
+                // keep the focus on the message testfield
                 if(message.getText().isEmpty()) {
                     message.requestFocus();
                     return;
@@ -147,6 +154,9 @@ public class JChat {
 
     }
     
+    /**
+     * retrieve the chat from the web service
+     */
     private void getChats() 
     {        
         try {
@@ -172,10 +182,7 @@ public class JChat {
                 // System.out.println(chatsString);
             }   
             
-            chats.setText(chatsString);
-            
-
-            
+            chats.setText(chatsString);   
             in.close();
         } catch(IOException ioex) {
             System.out.println("error retrievings chat message...");
