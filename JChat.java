@@ -105,54 +105,61 @@ public class JChat {
         /**
          * Send the chat message
          */
-		btnSubmit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-                
-                // if the user is not populated, then prompt the user
-                // and set the focus on the username textfield
-                if(userName.getText().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "UserName required!");
-                    userName.requestFocus();
-                    return;
-                }
-
-                // ensure there is a message to send  otherwise
-                // keep the focus on the message testfield
-                if(message.getText().isEmpty()) {
-                    message.requestFocus();
-                    return;
-                }
-
-                BufferedReader sendChatResponse;
-
-                try {
-                    URL sendMessageURL = new URL("http://dbachor.com/NCC/post.php?user=" + userName.getText() + "&message=" + message.getText());
-
-                    URLConnection chatConnection = sendMessageURL.openConnection();
-                    sendChatResponse = new BufferedReader(
-                                            new InputStreamReader(
-                                                chatConnection.getInputStream()));
-                    sendChatResponse.close();
-                    // System.out.println(sendChatResponse);
-                } catch(IOException ioex) {
-                    System.out.println("error sending chat message...");
-                } 
-         
-                getChats();
-			}
-        });
-
+        SendChatListener sendChatListener = new SendChatListener();
+        btnSubmit.addActionListener(sendChatListener);
+        message.addActionListener(sendChatListener);
+        
         Timer timer = new Timer();
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                // System.out.println("Inside Timer Task" + System.currentTimeMillis());
+               // System.out.println("Inside Timer Task" + System.currentTimeMillis());
                 getChats();
             }
         };
         timer.schedule(task, 2000,2000);
 
     }
+
+    private class SendChatListener implements ActionListener {
+       
+        public void actionPerformed(ActionEvent arg0) {
+                
+            // if the user is not populated, then prompt the user
+            // and set the focus on the username textfield
+            if(userName.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "UserName required!");
+                userName.requestFocus();
+                return;
+            }
+
+            // ensure there is a message to send  otherwise
+            // keep the focus on the message testfield
+            if(message.getText().isEmpty()) {
+                message.requestFocus();
+                return;
+            }
+
+            BufferedReader sendChatResponse;
+
+            try {
+                URL sendMessageURL = new URL("http://dbachor.com/NCC/post.php?user=" + userName.getText() + "&message=" + message.getText());
+
+                URLConnection chatConnection = sendMessageURL.openConnection();
+                sendChatResponse = new BufferedReader(
+                                        new InputStreamReader(
+                                            chatConnection.getInputStream()));
+                sendChatResponse.close();
+                // System.out.println(sendChatResponse);
+            } catch(IOException ioex) {
+                System.out.println("error sending chat message...");
+            } 
+     
+            getChats();
+            message.setText("");
+            message.requestFocus();
+        }
+    } // end sendChatListener
     
     /**
      * retrieve the chat from the web service
@@ -161,14 +168,17 @@ public class JChat {
     {        
         try {
             URL getChatMessages = new URL("http://dbachor.com/NCC/getChatLogJSON.php?startDateTime=" + URLEncoder.encode(this.dayte, "UTF-8"));
+            
+            //System.out.println(dayte);
 
             URLConnection messageConnection = getChatMessages.openConnection();
+            
             BufferedReader in = new BufferedReader(
                                     new InputStreamReader(
                                         messageConnection.getInputStream()));
+            
             String inputLine;
             inputLine = in.readLine();
-                
             JSONParser parser = new JSONParser();
             Object allChats = parser.parse(inputLine);
             JSONObject chatsObjects = (JSONObject)allChats;
@@ -179,7 +189,7 @@ public class JChat {
             for(Object chat : chatsArray) {
                 JSONObject achat = (JSONObject) chat;
                 chatsString += "(" + achat.get("dayte") + ") " + achat.get("user") + ": " + achat.get("message") + "\n";
-                // System.out.println(chatsString);
+                //System.out.println(chatsString);
             }   
             
             chats.setText(chatsString);   
