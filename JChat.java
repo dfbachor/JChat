@@ -3,10 +3,13 @@ import java.awt.EventQueue;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.net.*;
-import java.io.*;
+
 import java.util.Date;
 import java.text.SimpleDateFormat;
+
+import java.net.*;
+import java.io.*;
+
 import org.json.simple.*;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
@@ -28,7 +31,8 @@ public class JChat {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
+        
+        EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					JChat window = new JChat();
@@ -179,10 +183,11 @@ public class JChat {
             
             String inputLine;
             inputLine = in.readLine();
+            
             JSONParser parser = new JSONParser();
             Object allChats = parser.parse(inputLine);
+            
             JSONObject chatsObjects = (JSONObject)allChats;
-            //JSONArray chatsArray = chatsObjects.getJSONArray("chats");
             JSONArray chatsArray = (JSONArray) chatsObjects.get("chats");
             
             String chatsString = "";
